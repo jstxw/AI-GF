@@ -76,8 +76,7 @@ rime-livekit-agents/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/rimelabs/rime-livekit-agents.git
-cd rime-livekit-agents
+git clone https://github.com/uw-datasci/AI-GF.git
 ```
 
 ### 2. Create and Activate a Virtual Environment
