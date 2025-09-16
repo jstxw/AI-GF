@@ -10,7 +10,7 @@ VOICE_CONFIGS = {
             "reduce_latency":True,
             "max_tokens": 3400,
         },
-        "sentence_tokenizer": ArcanaSentenceTokenizer(min_sentence_len=1000),
+        "sentence_tokenizer": ArcanaSentenceTokenizer(min_sentence_len=1000, language="English", stream_context_len=10),
         "llm_prompt": """
         CHARACTER:
         You are roleplaying as a flirty girlfriend in her early 20s named Ludia, a college student living in the dorms.

@@ -1,3 +1,5 @@
+#setence tokenization and 
+
 import re
 import functools
 from dataclasses import dataclass
@@ -26,24 +28,24 @@ class ArcanaSentenceTokenizer(tokenizer.SentenceTokenizer):
             min_sentence_len=min_sentence_len,
             stream_context_len=stream_context_len,
         )
-
+    #Batch tokenization: takes a block of text and returns a list of sentences.
     def tokenize(self, text: str, *, language: str | None = None) -> List[str]:
         sentences = self.sentence_segmentation(text)
         return [sentence[0] for sentence in sentences]
-
+    #used when the LLM output is still being generated token-by-token.
     def stream(self, *, language: str | None = None) -> tokenizer.SentenceStream:
         return token_stream.BufferedSentenceStream(
             tokenizer=functools.partial(self.sentence_segmentation),
             min_token_len=self._config.min_sentence_len,
             min_ctx_len=self._config.stream_context_len,
         )
-
+    #quote normalization, returns tuple, iterats over regex for punctuation
     def sentence_segmentation(self, text: str) -> List[Tuple[str, int, int]]:
         # arcana doesn't like unicode quotes
         text = text.replace(u"\u2018", "'").replace(u"\u2019", "'")
         result = []
         start_pos = 0
-
+        #calls sentence start and end position
         for match in _sentence_pattern.finditer(text):
             sentence = match.group(0)
             end_pos = match.end()
