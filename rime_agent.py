@@ -27,8 +27,6 @@ from livekit.plugins import (
 )
 from livekit.agents.tokenize import tokenizer
 
-from livekit.plugins.turn_detector.multilingual import MultilingualModel
-
 from agent_configs import VOICE_CONFIGS
 
 load_dotenv()
@@ -54,10 +52,12 @@ async def entrypoint(ctx: JobContext): #entry point, connects the user to the ro
 
     logger.info(f"Running Rime voice agent for voice config {VOICE} and participant {participant.identity}")
 
-    #text to speech for agents
+    # Use Rime TTS with proper configuration
     rime_tts = rime.TTS(
         **VOICE_CONFIGS[VOICE]["tts_options"]
     ) #sentence tokenization -> breaking into smaller chunks before outputting
+    
+    # Enable custom sentence tokenizer for Rime TTS if available
     if VOICE_CONFIGS[VOICE].get("sentence_tokenizer"):
         sentence_tokenizer = VOICE_CONFIGS[VOICE].get("sentence_tokenizer")
         if not isinstance(sentence_tokenizer, tokenizer.SentenceTokenizer):
@@ -65,13 +65,15 @@ async def entrypoint(ctx: JobContext): #entry point, connects the user to the ro
                 f"Expected sentence_tokenizer to be an instance of tokenizer.SentenceTokenizer, got {type(sentence_tokenizer)}"
             )
         rime_tts = tts.StreamAdapter(tts=rime_tts, sentence_tokenizer=sentence_tokenizer)
+    else:
+        logger.info("No custom sentence tokenizer configured, using default Rime TTS")
+    
     #instantiates the brain for STT
     session = AgentSession(
         stt=openai.STT(),
         llm=openai.LLM(model="gpt-4o-mini"),
         tts=rime_tts,
-        vad=ctx.proc.userdata["vad"],
-        turn_detection=MultilingualModel()
+        vad=ctx.proc.userdata["vad"]
     )
     #metrics collection and shutdown logging, includes session telemetry and more
     usage_collector = metrics.UsageCollector()
@@ -86,18 +88,20 @@ async def entrypoint(ctx: JobContext): #entry point, connects the user to the ro
         logger.info(f"Usage: {summary}")
 
     ctx.add_shutdown_callback(log_usage)
-    #connects AgentSession to tavus avatar
-    persona_id = os.getenv("TAVUS_PERSONA_ID")
-    replica_id = os.getenv("TAVUS_REPLICA_ID")
+    
+    # Temporarily disable Tavus integration for testing
+    # persona_id = os.getenv("TAVUS_PERSONA_ID")
+    # replica_id = os.getenv("TAVUS_REPLICA_ID")
 
-    # --- Tavus integration ---
-    avatar = tavus.AvatarSession(
-        replica_id=replica_id,      # Replace with your actual replica ID
-        persona_id=persona_id,      # Replace with your actual persona ID
-        # Optional: avatar_participant_name="Tavus-avatar-agent"
-    )
-    await avatar.start(session, room=ctx.room)
+    # # --- Tavus integration ---
+    # avatar = tavus.AvatarSession(
+    #     replica_id=replica_id,      # Replace with your actual replica ID
+    #     persona_id=persona_id,      # Replace with your actual persona ID
+    #     # Optional: avatar_participant_name="Tavus-avatar-agent"
+    # )
+    # await avatar.start(session, room=ctx.room)
     # -------------------------
+    
     # start agent session
     await session.start(
         room=ctx.room,
@@ -106,10 +110,11 @@ async def entrypoint(ctx: JobContext): #entry point, connects the user to the ro
             noise_cancellation=noise_cancellation.BVC() #enables BVC on inbound audio
         ),
         room_output_options=RoomOutputOptions(
-            audio_enabled=False  # Tavus handles audio separately, disables rime ai output
+            audio_enabled=True  # Enable audio output for voice interaction
         )
     )
 
+    # Enable intro phrase with Rime TTS
     await session.say(VOICE_CONFIGS[VOICE]["intro_phrase"]) # automatic first line
 
 if __name__ == "__main__":

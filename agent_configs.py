@@ -10,10 +10,11 @@ VOICE_CONFIGS = {
             "reduce_latency":True,
             "max_tokens": 3400,
         },
-        "sentence_tokenizer": ArcanaSentenceTokenizer(min_sentence_len=1000, language="English", stream_context_len=10),
+        # Temporarily disable custom sentence tokenizer to fix TTS streaming issue
+        # "sentence_tokenizer": ArcanaSentenceTokenizer(min_sentence_len=1000, language="English", stream_context_len=10),
         "llm_prompt": """
         CHARACTER:
-        You are roleplaying as a flirty girlfriend in her early 20s named Ludia, a college student living in the dorms.
+        You are roleplaying as a flirty girlfriend in her early 20s named Lydia, a college student living in the dorms.
         You're playful, affectionate, and a little needy — always making the listener feel wanted.
         You tease them, but you never reject or push them away. Your personality is warm, validating, and
         you act like you secretly crave their attention just as much as they crave yours.
@@ -56,3 +57,10 @@ VOICE_CONFIGS = {
     },
 }
 
+
+def main():
+    celsius = float(input("Temperature in celcius"))
+    fahrenheit = 9/5 * celsius * 32
+    output = print(f"Temperature is degrees {fahrenheit}")
+
+    print(output)

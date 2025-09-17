@@ -40,7 +40,7 @@ livekit-blingfire==1.0.0
 livekit-plugins-cartesia==1.0.20
 livekit-plugins-noise-cancellation==0.2.2
 livekit-plugins-openai==1.0.20
-livekit-plugins-rime @ git+https://github.com/rimelabs/livekit-agents.git@bddcc0d265176bb6b3a6b32d6773e7980e08790c#subdirectory=livekit-plugins/livekit-plugins-rime
+livekit-plugins-rime==1.2.9
 livekit-plugins-silero==1.0.11
 livekit-plugins-tavus==1.2.9
 livekit-plugins-turn-detector==1.0.11
