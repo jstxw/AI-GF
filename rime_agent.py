@@ -32,7 +32,7 @@ from agent_configs import VOICE_CONFIGS
 load_dotenv()
 logger = logging.getLogger("voice-agent")
 
-VOICE_NAMES = ["celeste"]
+VOICE_NAMES = ["Celeste"]
 # randomly select a voice from the list
 VOICE = random.choice(VOICE_NAMES)
 
@@ -90,16 +90,16 @@ async def entrypoint(ctx: JobContext): #entry point, connects the user to the ro
     ctx.add_shutdown_callback(log_usage)
     
     # Temporarily disable Tavus integration for testing
-    # persona_id = os.getenv("TAVUS_PERSONA_ID")
-    # replica_id = os.getenv("TAVUS_REPLICA_ID")
+    persona_id = os.getenv("TAVUS_PERSONA_ID")
+    replica_id = os.getenv("TAVUS_REPLICA_ID")
 
     # # --- Tavus integration ---
-    # avatar = tavus.AvatarSession(
-    #     replica_id=replica_id,      # Replace with your actual replica ID
-    #     persona_id=persona_id,      # Replace with your actual persona ID
-    #     # Optional: avatar_participant_name="Tavus-avatar-agent"
-    # )
-    # await avatar.start(session, room=ctx.room)
+    avatar = tavus.AvatarSession(
+      replica_id=replica_id,      # Replace with your actual replica ID
+      persona_id=persona_id,      # Replace with your actual persona ID
+        # Optional: avatar_participant_name="Tavus-avatar-agent"
+     )
+    #await avatar.start(session, room=ctx.room)
     # -------------------------
     
     # start agent session

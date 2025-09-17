@@ -1,4 +1,4 @@
-#setence tokenization and 
+#sentence tokenization and 
 
 import re
 import functools
